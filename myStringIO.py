@@ -5,13 +5,15 @@
 A StringIO like class implement by Alex
 """
 
+from __future__ import print_functions
+
 __author__ = "Alex"
 __all__ = ["MyStringIO"]
 
 
 def _test_ifclosed(closed):
     if closed:
-        raise ValueError, "I/O operation on closed file"
+        raise ValueError("I/O operation on closed file")
 
 
 class MyStringIO:
@@ -177,39 +179,39 @@ def test():
         f.write(line)
     f.writelines(lines[-2:])
     if f.getvalue() != text:
-        raise RuntimeError, 'write failed'
+        raise RuntimeError('write failed')
     length = f.tell()
-    print 'File length =', length
-    print 'Text length =', len(text)
+    print('File length =', length)
+    print('Text length =', len(text))
     f.seek(len(lines[0]))
-    print "Position =", f.tell()
+    print("Position =", f.tell())
     f.write(lines[1])
-    print f.getvalue()
+    print(f.getvalue())
     f.seek(0)
-    print 'First line =', repr(f.readline())
-    print 'Position =', f.tell()
+    print('First line =', repr(f.readline()))
+    print('Position =', f.tell())
     line = f.readline()
-    print 'Second line =', repr(line)
+    print('Second line =', repr(line))
     f.seek(-len(line), 1)
     line2 = f.read(len(line))
     if line != line2:
-        raise RuntimeError, 'bad result after seek back'
+        raise RuntimeError('bad result after seek back')
     f.seek(len(line2), 1)
     l = f.readlines()
     line = l[-1]
     f.seek(f.tell() - len(line))
     line2 = f.read()
     if line != line2:
-        raise RuntimeError, 'bad result after seek back from EOF'
-    print 'Read', len(l), 'more lines'
-    print 'File length =', f.tell()
+        raise RuntimeError('bad result after seek back from EOF')
+    print('Read', len(l), 'more lines')
+    print('File length =', f.tell())
     if f.tell() != length:
-        raise RuntimeError, 'bad length'
+        raise RuntimeError('bad length')
     f.truncate(length/2)
     f.seek(0, 2)
-    print 'Truncated length =', f.tell()
+    print('Truncated length =', f.tell())
     if f.tell() != length/2:
-        raise RuntimeError, 'truncate did not adjust length'
+        raise RuntimeError('truncate did not adjust length')
     f.close()
 
 
