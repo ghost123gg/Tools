@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
+from __future__ import print_function
+
 __author__ = 'Alex'
 
 import requests
@@ -34,14 +36,14 @@ def init_list_from_file(filename):
     return l
 
 def sleep_function(lower, upper):
-    print "Sleeping..."
+    print("Sleeping...")
     time.sleep(random.uniform(lower, upper))
-    print "Finished...\n"
+    print("Finished...\n")
 
 def get_https_proxy_list():
     global http_header
 
-    print "--------------------\nGeting proxy..."
+    print("--------------------\nGeting proxy...")
     proxy_list = []
     entry_url = "http://proxy.moo.jp"
     target_url = "http://proxy.moo.jp/zh/"
@@ -80,7 +82,7 @@ def get_https_proxy_list():
                 ed = ipdecode.find(")")
                 proxy_ip = urllib.unquote(ipdecode[st+2 : ed-1]) + ":" + td_list[1].text
                 proxy_list.append(proxy_ip)
-    print "Find %d proxy\n--------------------" % len(proxy_list)
+    print("Find %d proxy\n--------------------" % len(proxy_list))
     return proxy_list
 
 def crawl_google(crawler, keyword, num, start, proxies = {}):
@@ -134,7 +136,7 @@ def extract_domain_list_from_cite_list(cite_list):
                 link = url[:ed]
                 domain = extract_domain(link)
                 if domain:
-                    print "Find domain : %s" % domain
+                    print("Find domain : %s" % domain)
                     domain_list.add(domain)
     return domain_list
 
@@ -182,26 +184,26 @@ def detect(keyword):
     num = select_random_number_from_list(p_list)
     crawler = requests.Session()
 
-    print "====================\nDetect keyword:",
-    print keyword
+    print("====================\nDetect keyword:", end="")
+    print(keyword)
     while True:
         try:
-            print "Select proxy : %s" % p_list[num]
+            print("Select proxy : %s" % p_list[num])
             html = crawl_google(crawler, keyword, 10, 0, {"https" : p_list[num]})
             #html = crawl_google(crawler, keyword, 10, 0)
             soup = BeautifulSoup(html)
             cite_list = extract_cite_list_from_html(soup)
             if len(cite_list) == 0:
-                print "cite list is empty",
+                print("cite list is empty", end="")
                 raise Exception
         except KeyboardInterrupt:
             break
         except Exception, e:
-            print e
-            print "Error! delete proxy %s" % p_list[num]
+            print(e)
+            print("Error! delete proxy %s" % p_list[num])
             crawler = requests.Session()
             del p_list[num]
-            print "%d remained\n" % len(p_list)
+            print("%d remained\n" % len(p_list))
             if len(p_list) == 0:
                 p_list = get_https_proxy_list()
             num = select_random_number_from_list(p_list)
@@ -210,7 +212,7 @@ def detect(keyword):
 
     soup = BeautifulSoup(html)
     cite_list = extract_cite_list_from_html(soup)
-    print "cite list length %d" % len(cite_list)
+    print("cite list length %d" % len(cite_list))
     domain_list = extract_domain_list_from_cite_list(cite_list)
 
     sleep_function(5, 10)
@@ -218,21 +220,21 @@ def detect(keyword):
     for ele in domain_list:
         while True:
             try:
-                print "Select proxy : %s" % p_list[num]
+                print("Select proxy : %s" % p_list[num])
                 html = crawl_google(crawler, "site:" + ele, 15, 0, {"https" : p_list[num]})
                 #html = crawl_google(crawler, "site:" + ele, 10, 0)
                 soup = BeautifulSoup(html)
                 cite_list = extract_cite_list_from_html(soup)
                 if len(cite_list) == 0:
-                    print "cite list is empty",
+                    print("cite list is empty", end="")
                     raise Exception
             except KeyboardInterrupt:
                 break
             except Exception, e:
-                print e
-                print "Error! delete proxy %s" % p_list[num]
+                print(e)
+                print("Error! delete proxy %s" % p_list[num])
                 del p_list[num]
-                print "%d remained\n" % len(p_list)
+                print("%d remained\n" % len(p_list))
                 crawler = requests.Session()
                 if len(p_list) == 0:
                     p_list = get_https_proxy_list()
@@ -246,21 +248,21 @@ def detect(keyword):
         for cite in cite_list:
             url = cite.text
             if is_spider_pool_url(url):
-                print "check url : %s : yes" % url
+                print("check url : %s : yes" % url)
                 cnt += 1
             else:
-                print "check url : %s : no" % url
+                print("check url : %s : no" % url)
         if cnt >= 4:
-            print keyword + " " + ele
+            print(keyword + " " + ele)
             with codecs.open("result2.txt", "a") as f:
                 f.write(keyword + " " + ele + "\n")
         else:
-            print ele + " is not a spider pool"
+            print(ele + " is not a spider pool")
         sleep_function(7, 13)
 
     with open("visited2.txt", "a") as f:
         f.write(keyword + "\n")
-    print "Finished\n===================="
+    print("Finished\n====================")
 
 def run():
     keyword_list = []
